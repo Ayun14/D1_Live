@@ -44,22 +44,34 @@ void AD1PlayerController::Input_Move(const FInputActionValue& InputValue)
 {
 	FVector2D MovementVector = InputValue.Get<FVector2D>();
 
-	if (MovementVector.X != 0)
-	{
-		FVector Direction = GetPawn()->GetActorForwardVector() * MovementVector.X;
-		GetPawn()->AddActorWorldOffset(Direction);
-	}
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.0f , Rotation.Yaw , 0.0f);
 
-	if (MovementVector.Y != 0)
-	{
-		FVector Direction = GetPawn()->GetActorRightVector() * MovementVector.Y;
-		GetPawn()->AddActorWorldOffset(Direction);
-	}
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	GetPawn()->AddMovementInput(ForwardDirection , MovementVector.X);
+	GetPawn()->AddMovementInput(RightDirection , MovementVector.Y);
+
+	//if (MovementVector.X != 0)
+	//{
+	//	FVector Direction = GetPawn()->GetActorForwardVector() * MovementVector.X;
+	//	GetPawn()->AddActorWorldOffset(Direction);
+	//}
+
+	//if (MovementVector.Y != 0)
+	//{
+	//	FVector Direction = GetPawn()->GetActorRightVector() * MovementVector.Y;
+	//	GetPawn()->AddActorWorldOffset(Direction);
+	//}
 }
 
 void AD1PlayerController::Input_Turn(const FInputActionValue& InputValue)
 {
 	float XValue = InputValue.Get<float>();
-	FRotator Rotation(0.0f , XValue , 0.0f);
-	GetPawn()->AddActorWorldRotation(Rotation);
+	AddYawInput(XValue);
+
+	//GetPawn()->AddControllerYawInput(XValue);
+	//FRotator Rotation(0.0f , XValue , 0.0f);
+	//GetPawn()->AddActorWorldRotation(Rotation);
 }
