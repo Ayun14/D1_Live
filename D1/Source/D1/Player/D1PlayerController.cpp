@@ -4,6 +4,7 @@
 #include "Player/D1PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/Character.h"
 
 AD1PlayerController::AD1PlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -32,6 +33,7 @@ void AD1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(AttackAction , ETriggerEvent::Triggered , this, &ThisClass::Input_Attack);
 		EnhancedInputComponent->BindAction(MoveAction , ETriggerEvent::Triggered , this, &ThisClass::Input_Move);
 		EnhancedInputComponent->BindAction(TurnAction , ETriggerEvent::Triggered , this, &ThisClass::Input_Turn);
+		EnhancedInputComponent->BindAction(JumpAction , ETriggerEvent::Triggered , this, &ThisClass::Input_Jump);
 	}
 }
 
@@ -74,4 +76,14 @@ void AD1PlayerController::Input_Turn(const FInputActionValue& InputValue)
 	//GetPawn()->AddControllerYawInput(XValue);
 	//FRotator Rotation(0.0f , XValue , 0.0f);
 	//GetPawn()->AddActorWorldRotation(Rotation);
+}
+
+void AD1PlayerController::Input_Jump(const FInputActionValue& InputValue)
+{
+	ACharacter* CharacterPlayer = Cast<ACharacter>(GetPawn());
+
+	if (CharacterPlayer)
+	{
+		CharacterPlayer->Jump();
+	}
 }
