@@ -26,4 +26,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	virtual void ProcessAttack();
+	virtual void ProcessComboAttack();
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UAnimMontage> ComboAttackMontage;
 };

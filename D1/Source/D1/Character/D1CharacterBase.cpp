@@ -26,10 +26,32 @@ AD1CharacterBase::AD1CharacterBase()
 	// Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f , 0.0f , -88.0f) , FRotator(0.0f , -90.0f , 0.0f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> FindMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/_Art/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> FindMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/_Art/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Warrior.SK_CharM_Warrior'"));
 	if (FindMeshRef.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(FindMeshRef.Object);
+	}
+
+	// Animation
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceRef(TEXT("/Script/Engine.AnimBlueprint'/Game/Animation/ABP_Player.ABP_Player_C'"));
+	if (AnimInstanceRef.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(AnimInstanceRef.Class);
+	}
+
+	// Attack Montage
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Attack.AM_Attack'"));
+	if (AttackMontageRef.Succeeded())
+	{
+		AttackMontage = AttackMontageRef.Object;
+	}
+
+	// ComboAttack Montage
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboAttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_ComboAttack.AM_ComboAttack'"));
+	if (ComboAttackMontageRef.Succeeded())
+	{
+		ComboAttackMontage = ComboAttackMontageRef.Object;
 	}
 }
 
@@ -52,5 +74,28 @@ void AD1CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AD1CharacterBase::ProcessAttack()
+{
+	if (GetCurrentMontage() == AttackMontage) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		int32 Index = FMath::RandRange(1, 4);
+		FString SectionName = FString::Printf(TEXT("Attack%d"), Index);
+		AnimInstance->Montage_Play(AttackMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName(*SectionName));
+	}
+}
+
+void AD1CharacterBase::ProcessComboAttack()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance )
+	{
+		AnimInstance->Montage_Play(ComboAttackMontage , 1.0f);
+	}
 }
 

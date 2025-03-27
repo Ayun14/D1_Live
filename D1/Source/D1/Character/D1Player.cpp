@@ -96,7 +96,7 @@ void AD1Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AD1Player::Input_Attack(const FInputActionValue& InputValue)
 {
-	GEngine->AddOnScreenDebugMessage(0 , 1.0f , FColor::Cyan , TEXT("Attack"));
+	ProcessComboAttack();
 }
 
 void AD1Player::Input_Move(const FInputActionValue& InputValue)
