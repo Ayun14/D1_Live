@@ -30,10 +30,24 @@ public:
 	virtual void ProcessAttack();
 	virtual void ProcessComboAttack();
 
+	void ComboAttackBegine();
+	void ComboAttackEnd(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
+
+	void SetComboCheckTimer();
+	void ComboCheck();
+
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere , Category = Attack)
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Attack)
 	TObjectPtr<class UAnimMontage> ComboAttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
+	TObjectPtr<class UD1ComboAttackData> ComboAttackData;
+
+	int32 CurrentCombo = 0;
+
+	FTimerHandle ComboTimerHandle;
+	bool HasNextComboCommand = false;
 };
