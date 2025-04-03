@@ -27,6 +27,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual float TakeDamage(float Damage , struct FDamageEvent const& DamageEvent , AController* EventInstigator , AActor* DamageCauser) override;
+
 public:
 	virtual void ProcessAttack();
 	virtual void ProcessComboAttack();
@@ -37,6 +39,11 @@ public:
 	void SetComboCheckTimer();
 	void ComboCheck();
 
+	// ID1AttackInterface을(를) 통해 상속됨
+	void AttackHitCheck() override;
+
+	virtual void SetDead();
+
 protected:
 	UPROPERTY(EditAnywhere , Category = Attack)
 	TObjectPtr<class UAnimMontage> AttackMontage;
@@ -45,13 +52,13 @@ protected:
 	TObjectPtr<class UAnimMontage> ComboAttackMontage;
 
 	UPROPERTY(EditAnywhere, Category = Attack)
+	TObjectPtr<class UAnimMontage> DeadMontage;
+
+	UPROPERTY(EditAnywhere, Category = Attack)
 	TObjectPtr<class UD1ComboAttackData> ComboAttackData;
 
 	int32 CurrentCombo = 0;
 
 	FTimerHandle ComboTimerHandle;
 	bool HasNextComboCommand = false;
-public:
-	// ID1AttackInterface을(를) 통해 상속됨
-	void AttackHitCheck() override;
 };

@@ -25,3 +25,16 @@ void AD1Monster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+void AD1Monster::SetDead()
+{
+	Super::SetDead();
+
+	FTimerHandle DeadTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle , FTimerDelegate::CreateLambda(
+		[&]()
+		{
+			Destroy();
+		}
+	) , DeadEventDelayTime , false);
+}

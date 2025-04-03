@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "D1ComboAttackData.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AD1CharacterBase::AD1CharacterBase()
@@ -55,6 +56,13 @@ AD1CharacterBase::AD1CharacterBase()
 		ComboAttackMontage = ComboAttackMontageRef.Object;
 	}
 
+	// Dead Montage
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/AM_Dead.AM_Dead'"));
+	if (DeadMontageRef.Succeeded())
+	{
+		DeadMontage = DeadMontageRef.Object;
+	}
+
 	// ComboAttack Data
 	static ConstructorHelpers::FObjectFinder<UD1ComboAttackData> ComboAttackDataRef(TEXT("/Script/D1.D1ComboAttackData'/Game/CharacterAction/DA_ComboAttackData.DA_ComboAttackData'"));
 	if (ComboAttackDataRef.Succeeded())
@@ -82,6 +90,13 @@ void AD1CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+float AD1CharacterBase::TakeDamage(float Damage , FDamageEvent const& DamageEvent , AController* EventInstigator , AActor* DamageCauser)
+{
+	Super::TakeDamage(Damage , DamageEvent , EventInstigator , DamageCauser);
+	SetDead();
+	return Damage;
 }
 
 void AD1CharacterBase::ProcessAttack()
@@ -191,7 +206,8 @@ void AD1CharacterBase::AttackHitCheck()
 
 	if (HitDetected)
 	{
-		UE_LOG(LogTemp , Log , TEXT("HitDetected"));
+		FDamageEvent DamageEvent;
+		OutHitResult.GetActor()->TakeDamage(AttackDamage , DamageEvent , GetController() , this);
 	}
 
 #if ENABLE_DRAW_DEBUG
@@ -202,4 +218,17 @@ void AD1CharacterBase::AttackHitCheck()
 	DrawDebugCapsule(GetWorld() , CapsuleOrigin , CapsuleHalfHeight , AttackRadius ,
 		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat() , DrawColor , false , 5.0f);
 #endif
+}
+
+void AD1CharacterBase::SetDead()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		AnimInstance->StopAllMontages(false);
+		AnimInstance->Montage_Play(DeadMontage, 1.0f);
+	}
+
+	SetActorEnableCollision(false);
 }
