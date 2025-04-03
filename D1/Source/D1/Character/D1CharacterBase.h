@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/D1AttackInterface.h"
 #include "D1CharacterBase.generated.h"
 
 UCLASS()
-class D1_API AD1CharacterBase : public ACharacter
+class D1_API AD1CharacterBase : public ACharacter, public ID1AttackInterface
 {
 	GENERATED_BODY()
 
@@ -50,4 +51,7 @@ protected:
 
 	FTimerHandle ComboTimerHandle;
 	bool HasNextComboCommand = false;
+public:
+	// ID1AttackInterface을(를) 통해 상속됨
+	void AttackHitCheck() override;
 };
